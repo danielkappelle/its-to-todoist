@@ -34,3 +34,6 @@ jobs:
           
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ghcr.io/danielkappelle/its-to-todoist:${{ steps.package-version.outputs.current-version}}
+
+      - name: Push the docker image
+        run: docker push ghcr.io/danielkappelle/its-to-todoist:${{ steps.package-version.outputs.current-version}}
