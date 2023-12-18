@@ -14,10 +14,12 @@
     "@doist/todoist-api-typescript": "^3.0.1",
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
+    "node-cron": "^3.0.3",
     "puppeteer": "^21.6.1",
     "winston": "^3.11.0"
   },
   "devDependencies": {
+    "@types/node-cron": "^3.0.11",
     "@types/puppeteer": "^7.0.4",
     "prettier": "^3.1.1",
     "type-fest": "^4.8.3",
