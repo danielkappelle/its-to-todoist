@@ -1,6 +1,6 @@
 {
   "name": "its-to-todoist",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Import ITS tasks to Todoist",
   "main": "index.js",
   "licenses": [],

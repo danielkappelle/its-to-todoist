@@ -5,6 +5,7 @@ import * as cron from 'node-cron';
 
 (async () => {
   logger.info('Script started');
+  logger.info(`Endpoint: ${process.env['ITS_BASE_URL']}`);
   const app = new ItsToTodoist();
   await app.init();
   logger.info('First sync');
