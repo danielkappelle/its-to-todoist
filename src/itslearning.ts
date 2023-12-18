@@ -93,7 +93,7 @@ export class ItsLearning {
 
   private async fetchTasks(): Promise<Response> {
     return await fetch(
-      `https://${this.baseUrl}/restapi/personal/tasklistdailyworkflow/v1?PageIndex=0&PageSize=100`,
+      `${this.baseUrl}/restapi/personal/tasklistdailyworkflow/v1?PageIndex=0&PageSize=100`,
       {
         method: 'GET',
         headers: {
