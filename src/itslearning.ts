@@ -1,6 +1,8 @@
 import puppeteer, { HTTPRequest } from 'puppeteer';
 import { Task } from './interfaces';
 
+type TaskCb = (value: Task[]) => void;
+
 export class ItsLearning {
   constructor() {
     if (!process.env['USERNAME'] || !process.env['PASSWORD']) {
@@ -23,7 +25,7 @@ export class ItsLearning {
     }));
   }
 
-  private async handleRequest(request: HTTPRequest, cb: Function) {
+  private async handleRequest(request: HTTPRequest, cb: TaskCb) {
     if (request.url().includes('tasklistdailyworkflow')) {
       const unparsedTasks = await request.response().json();
       const tasks = this.parseTasks(unparsedTasks);
@@ -31,11 +33,11 @@ export class ItsLearning {
     }
   }
 
-  async getTasks() {
+  async getTasks(): Promise<Task[]> {
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
 
-    const tasks = await new Promise(async (resolve, reject) => {
+    const tasks = await new Promise<Task[]>(async (resolve, reject) => {
       page.on('requestfinished', (req) => this.handleRequest(req, resolve));
 
       await page.goto('https://kls.itslearning.com/');
