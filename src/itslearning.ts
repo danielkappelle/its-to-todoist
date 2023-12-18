@@ -1,12 +1,13 @@
 import puppeteer, { HTTPRequest } from 'puppeteer';
 import { Task } from './interfaces';
+import { logger } from './logger';
 
 type TaskCb = (value: Task[]) => void;
 
 export class ItsLearning {
   constructor() {
     if (!process.env['USERNAME'] || !process.env['PASSWORD']) {
-      console.error('Make sure to set up env vars USERNAME and PASSWORD');
+      logger.error('Make sure to set up env vars USERNAME and PASSWORD');
       process.exit(1);
     }
   }

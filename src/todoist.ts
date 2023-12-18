@@ -1,5 +1,6 @@
 import { Task, TodoistApi } from '@doist/todoist-api-typescript';
 import { Task as ItsTask } from './interfaces';
+import { logger } from './logger';
 
 export class TodoistWrapper {
   api: TodoistApi;
@@ -11,6 +12,7 @@ export class TodoistWrapper {
   }
 
   async init() {
+    logger.verbose('TodoistWrapper init');
     await this.setProject();
     await this.getExistingTasks();
   }
@@ -20,7 +22,7 @@ export class TodoistWrapper {
       const content = `[${task.courseTitle}] ${task.taskTitle}`;
       const existingTask = this.tasks.find((task) => task.content === content);
       if (existingTask) {
-        console.log(`> Skipped existing task with id ${existingTask.id}`);
+        logger.info(`Skipped existing task with id ${existingTask.id}`);
         continue;
       }
 
@@ -31,7 +33,7 @@ export class TodoistWrapper {
       });
       this.tasks.push(newTask);
 
-      console.log(`> Added new task with id ${newTask.id}`);
+      logger.info(`Added new task with id ${newTask.id}`);
     }
   }
 
@@ -45,7 +47,7 @@ export class TodoistWrapper {
 
     if (!projId) {
       this.projectId = projects[0].id;
-      console.log('Warning: Using default project');
+      logger.warn('Using default project');
     } else {
       this.projectId = projId;
     }

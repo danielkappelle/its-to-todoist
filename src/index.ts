@@ -1,15 +1,11 @@
 import 'dotenv/config';
-import { ItsLearning } from './itslearning';
-import { TodoistWrapper } from './todoist';
+import { logger } from './logger';
+import { ItsToTodoist } from './its-to-todoist';
 
 (async () => {
-  const its = new ItsLearning();
-  const todo = new TodoistWrapper();
-  await todo.init();
-
-  console.log('> Getting tasks');
-  const tasks = await its.getTasks();
-  console.log(`> Found ${tasks.length} tasks`);
-
-  await todo.addTasks(tasks);
+  logger.info('Script started');
+  const app = new ItsToTodoist();
+  await app.init();
+  await app.sync();
+  logger.info('All done!');
 })();

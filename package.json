@@ -14,7 +14,8 @@
     "@doist/todoist-api-typescript": "^3.0.1",
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
-    "puppeteer": "^21.6.1"
+    "puppeteer": "^21.6.1",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@types/puppeteer": "^7.0.4",
