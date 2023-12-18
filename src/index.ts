@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import { ItsLearning } from './itslearning';
-import { Task as ItsTask } from './interfaces';
 import { TodoistWrapper } from './todoist';
 
 (async () => {
