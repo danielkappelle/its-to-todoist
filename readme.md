@@ -23,3 +23,5 @@ Start the proejct
 ```sh
 npm start
 ```
+
+## Build Docker

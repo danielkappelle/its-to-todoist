@@ -52,7 +52,14 @@ export class ItsLearning {
       );
 
       await page.click('#NativeLoginButton');
-      await page.waitForSelector('#personal-menu-link');
+      try {
+        await page.waitForSelector('#personal-menu-link', { timeout: 10000 });
+        logger.info('Log in successful');
+      } catch {
+        logger.error('Timed out, login was probably unsuccessful');
+        return resolve([]);
+      }
+
       await page.goto(
         'https://kls.itslearning.com/Dashboard/Dashboard.aspx?LocationType=Personal&DashboardType=MyPage'
       );

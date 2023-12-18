@@ -7,8 +7,11 @@ import * as cron from 'node-cron';
   logger.info('Script started');
   const app = new ItsToTodoist();
   await app.init();
+  logger.info('First sync');
+  await app.sync();
 
-  cron.schedule('* * * * *', async () => {
+  logger.info('Start cronjob');
+  cron.schedule('0 * * * *', async () => {
     logger.info('Sync!');
     await app.sync();
   });

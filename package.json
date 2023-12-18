@@ -6,7 +6,10 @@
   "licenses": [],
   "scripts": {
     "start": "tsc && node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "docker:build": "source .env && npm run build && docker build -t ${DOCKER_URL}:$npm_package_version .",
+    "docker:push": "source .env && docker push ${DOCKER_URL:$npm_package_version"
   },
   "author": "Daniel Kappelle <daniel.kappelle@gmail.com>",
   "license": "MIT",
