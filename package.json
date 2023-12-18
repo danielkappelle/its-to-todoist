@@ -1,6 +1,6 @@
 {
   "name": "its-to-todoist",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Import ITS tasks to Todoist",
   "main": "index.js",
   "licenses": [],
@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "docker:build": "source .env && npm run build && docker build -t ${DOCKER_URL}:$npm_package_version .",
-    "docker:push": "source .env && docker push ${DOCKER_URL:$npm_package_version"
+    "docker:push": "source .env && docker push ${DOCKER_URL}:$npm_package_version"
   },
   "author": "Daniel Kappelle <daniel.kappelle@gmail.com>",
   "license": "MIT",
@@ -18,7 +18,7 @@
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
     "node-cron": "^3.0.3",
-    "puppeteer": "^21.6.1",
+    "node-html-parser": "^6.1.11",
     "winston": "^3.11.0"
   },
   "devDependencies": {

@@ -1,15 +1,40 @@
-import puppeteer, { HTTPRequest } from 'puppeteer';
 import { Task } from './interfaces';
 import { logger } from './logger';
-
-type TaskCb = (value: Task[]) => void;
+import { parse } from 'node-html-parser';
 
 export class ItsLearning {
+  cookies: string;
+  username: string;
+  password: string;
+  baseUrl: string;
+
   constructor() {
     if (!process.env['USERNAME'] || !process.env['PASSWORD']) {
       logger.error('Make sure to set up env vars USERNAME and PASSWORD');
       process.exit(1);
     }
+
+    if (!process.env['ITS_BASE_URL']) {
+      logger.error(
+        `Make sure to set the ITS_BASE_URL env var (don't end with a /)`
+      );
+      process.exit(2);
+    }
+
+    this.username = process.env['USERNAME'];
+    this.password = process.env['PASSWORD'];
+    this.baseUrl = process.env['ITS_BASE_URL'];
+  }
+
+  private parseCookies(response: Response) {
+    const raw = response.headers.getSetCookie();
+    return raw
+      .map((entry) => {
+        const parts = entry.split(';');
+        const cookiePart = parts[0];
+        return cookiePart;
+      })
+      .join(';');
   }
 
   private parseTasks(raw: any): Task[] {
@@ -26,46 +51,62 @@ export class ItsLearning {
     }));
   }
 
-  private async handleRequest(request: HTTPRequest, cb: TaskCb) {
-    if (request.url().includes('tasklistdailyworkflow')) {
-      const unparsedTasks = await request.response().json();
-      const tasks = this.parseTasks(unparsedTasks);
-      cb(tasks);
-    }
+  private async getBodyParams() {
+    const res = await fetch(`${this.baseUrl}/index.aspx`, {
+      method: 'GET',
+    });
+
+    this.cookies = this.parseCookies(res);
+    const root = parse(await res.text());
+
+    const viewState = root.querySelector('#__VIEWSTATE').getAttribute('value');
+    const eventValidation = root
+      .querySelector('#__EVENTVALIDATION')
+      .getAttribute('value');
+    const viewStateGenerator = root
+      .querySelector('#__VIEWSTATEGENERATOR')
+      .getAttribute('value');
+
+    const body = new URLSearchParams();
+    body.append('__EVENTTARGET', '__Page');
+    body.append('__EVENTARGUMENT', 'NativeLoginButtonClicked');
+    body.append('__VIEWSTATE', viewState);
+    body.append('__VIEWSTATEGENERATOR', viewStateGenerator);
+    body.append('__EVENTVALIDATION', eventValidation);
+    body.append('ctl00$ContentPlaceHolder1$Username', this.username);
+    body.append('ctl00$ContentPlaceHolder1$Password', this.password);
+    body.append('ctl00$ContentPlaceHolder1$ChromebookApp', 'false');
+    body.append('ctl00$ContentPlaceHolder1$showNativeLoginValueField', '');
+    return body;
+  }
+
+  private async login(body: URLSearchParams) {
+    await fetch(`${this.baseUrl}/index.aspx`, {
+      method: 'POST',
+      body: body.toString(),
+      headers: {
+        cookie: this.cookies,
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+    });
+  }
+
+  private async fetchTasks(): Promise<Response> {
+    return await fetch(
+      `https://${this.baseUrl}/restapi/personal/tasklistdailyworkflow/v1?PageIndex=0&PageSize=100`,
+      {
+        method: 'GET',
+        headers: {
+          cookie: this.cookies,
+        },
+      }
+    );
   }
 
   async getTasks(): Promise<Task[]> {
-    const browser = await puppeteer.launch({ headless: 'new' });
-    const page = await browser.newPage();
-
-    const tasks = await new Promise<Task[]>(async (resolve, reject) => {
-      page.on('requestfinished', (req) => this.handleRequest(req, resolve));
-
-      await page.goto('https://kls.itslearning.com/');
-      await page.type(
-        '#prom-input-UsernameField',
-        process.env['USERNAME'] as string
-      );
-      await page.type(
-        '#password-PasswordField',
-        process.env['PASSWORD'] as string
-      );
-
-      await page.click('#NativeLoginButton');
-      try {
-        await page.waitForSelector('#personal-menu-link', { timeout: 10000 });
-        logger.info('Log in successful');
-      } catch {
-        logger.error('Timed out, login was probably unsuccessful');
-        return resolve([]);
-      }
-
-      await page.goto(
-        'https://kls.itslearning.com/Dashboard/Dashboard.aspx?LocationType=Personal&DashboardType=MyPage'
-      );
-    });
-
-    await browser.close();
-    return tasks;
+    const body = await this.getBodyParams();
+    await this.login(body);
+    const rawTasks = await this.fetchTasks();
+    return this.parseTasks(await rawTasks.json());
   }
 }
