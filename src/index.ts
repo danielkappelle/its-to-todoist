@@ -14,6 +14,11 @@ import * as cron from 'node-cron';
   logger.info('Start cronjob');
   cron.schedule('0 * * * *', async () => {
     logger.info('Sync!');
-    await app.sync();
+    try {
+      await app.sync();
+    } catch (e) {
+      logger.error('There was an error syncing');
+      logger.error(e);
+    }
   });
 })();

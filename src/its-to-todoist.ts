@@ -15,9 +15,13 @@ export class ItsToTodoist {
 
   async sync() {
     logger.info('Getting tasks');
-    const tasks = await this.its.getTasks();
-    logger.info(`Found ${tasks.length} tasks`);
-
-    await this.todo.addTasks(tasks);
+    try {
+      const tasks = await this.its.getTasks();
+      logger.info(`Found ${tasks.length} tasks`);
+      await this.todo.addTasks(tasks);
+    } catch (e) {
+      logger.error('Error retrieving tasks');
+      logger.error(e);
+    }
   }
 }
