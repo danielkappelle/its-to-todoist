@@ -107,6 +107,8 @@ export class ItsLearning {
     const body = await this.getBodyParams();
     await this.login(body);
     const rawTasks = await this.fetchTasks();
-    return this.parseTasks(await rawTasks.json());
+    const rawTasksJson = await rawTasks.json();
+    logger.debug(rawTasksJson);
+    return this.parseTasks(rawTasksJson);
   }
 }
