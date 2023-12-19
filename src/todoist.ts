@@ -30,6 +30,7 @@ export class TodoistWrapper {
 
       const newTask = await this.api.addTask({
         content,
+        description: `[Open on ITS](${task.taskUrl})`,
         projectId: this.projectId,
         dueDatetime: task.deadline.toISOString(),
       });
