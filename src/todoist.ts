@@ -26,6 +26,8 @@ export class TodoistWrapper {
         continue;
       }
 
+      logger.debug(task);
+
       const newTask = await this.api.addTask({
         content,
         projectId: this.projectId,
@@ -34,6 +36,7 @@ export class TodoistWrapper {
       this.tasks.push(newTask);
 
       logger.info(`Added new task with id ${newTask.id}`);
+      logger.debug(newTask);
     }
   }
 
