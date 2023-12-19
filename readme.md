@@ -41,3 +41,9 @@ Pushing
 ```sh
 npm run docker:push
 ```
+
+## FAQ
+
+### My deadlines are incorrect
+
+If you are running the project inside Docker, make sure to set the correct timezone. Docker uses UTC by default, but it can be changed by setting the `TZ` environment variable as desired. For example `Europe/Amsterdam`.
